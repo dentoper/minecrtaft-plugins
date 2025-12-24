@@ -1,0 +1,29 @@
+messages:
+  collar-equipped: "&aYou equipped collar: &e{collar_name}"
+  collar-removed: "&aYou removed your collar"
+  no-permission: "&cYou don't have permission for this collar"
+  collar-not-found: "&cCollar not found"
+  help-message: "&6=== Collar Help ===\n&e/collar list &f- show collars\n&e/collar wear <name> &f- equip\n&e/collar remove &f- remove\n&e/collar gui &f- open menu"
+  already-wearing: "&cYou already wearing a collar"
+
+collars:
+  standard:
+    display-name: "&6Standard Collar"
+    description: "Basic collar"
+    model-data: 1
+    permission: "playercollars.collar.standard"
+  leather:
+    display-name: "&cLeather Collar"
+    description: "Leather collar"
+    model-data: 2
+    permission: "playercollars.collar.leather"
+  gold:
+    display-name: "&eGold Collar"
+    description: "Gold collar"
+    model-data: 3
+    permission: "playercollars.collar.gold"
+  diamond:
+    display-name: "&bDiamond Collar"
+    description: "Premium collar"
+    model-data: 4
+    permission: "playercollars.collar.diamond"

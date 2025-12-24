@@ -5,180 +5,118 @@ import com.dentoper.playercollars.config.ConfigManager;
 import com.dentoper.playercollars.gui.CollarGUI;
 import com.dentoper.playercollars.utils.ColorUtil;
 import com.dentoper.playercollars.utils.PermissionUtil;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class CollarCommand implements CommandExecutor {
+public class CollarCommand implements CommandExecutor, TabCompleter {
     private final PlayerCollarsPlugin plugin;
-    
+
     public CollarCommand(PlayerCollarsPlugin plugin) {
         this.plugin = plugin;
     }
-    
+
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage("This command can only be used by players!");
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("Only players can use this command.");
             return true;
         }
-        
-        Player player = (Player) sender;
-        
-        if (!PermissionUtil.hasUsePermission(player)) {
-            player.sendMessage(ColorUtil.colorize(plugin.getConfigManager().getMessage("no-permission")));
+
+        if (args.length == 0 || args[0].equalsIgnoreCase("help")) {
+            player.sendMessage(plugin.getConfigManager().getMessage("help-message"));
             return true;
         }
-        
-        if (args.length == 0) {
-            sendHelp(player);
-            return true;
-        }
-        
+
         switch (args[0].toLowerCase()) {
-            case "help":
-                sendHelp(player);
-                break;
-            case "list":
-                handleList(player);
-                break;
-            case "wear":
+            case "gui" -> {
+                plugin.getCollarGUI().open(player);
+                return true;
+            }
+            case "list" -> {
+                player.sendMessage(ColorUtil.color("&6Available collars:"));
+                for (String id : plugin.getConfigManager().getCollars().keySet()) {
+                    player.sendMessage(ColorUtil.color(" - &e" + id));
+                }
+                return true;
+            }
+            case "wear" -> {
                 if (args.length < 2) {
-                    player.sendMessage(ColorUtil.colorize("&cUsage: /collar wear <collar_name>"));
+                    player.sendMessage(ColorUtil.color("&cUsage: /collar wear <name>"));
                     return true;
                 }
-                handleWear(player, args[1]);
-                break;
-            case "remove":
-                handleRemove(player);
-                break;
-            case "gui":
-                handleGUI(player);
-                break;
-            case "info":
-                handleInfo(player);
-                break;
-            case "admin":
-                if (args.length < 2) {
-                    player.sendMessage(ColorUtil.colorize("&cUsage: /collar admin reload"));
+                String collarId = args[1];
+                ConfigManager.CollarData collarData = plugin.getConfigManager().getCollar(collarId);
+                if (collarData == null) {
+                    player.sendMessage(plugin.getConfigManager().getMessage("collar-not-found"));
                     return true;
                 }
-                handleAdmin(player, args[1]);
-                break;
-            default:
-                player.sendMessage(ColorUtil.colorize("&cUnknown command. Use /collar help for help."));
-                break;
+                if (!PermissionUtil.has(player, collarData.getPermission())) {
+                    player.sendMessage(plugin.getConfigManager().getMessage("no-permission"));
+                    return true;
+                }
+                equipCollar(player, collarData);
+                return true;
+            }
+            case "remove" -> {
+                removeCollar(player);
+                return true;
+            }
+            case "reload" -> {
+                if (!PermissionUtil.isAdmin(player)) {
+                    player.sendMessage(plugin.getConfigManager().getMessage("no-permission"));
+                    return true;
+                }
+                plugin.getConfigManager().loadConfig();
+                player.sendMessage(ColorUtil.color("&aConfiguration reloaded!"));
+                return true;
+            }
         }
-        
+
         return true;
     }
-    
-    private void sendHelp(Player player) {
-        player.sendMessage(ColorUtil.colorize(plugin.getConfigManager().getMessage("help-message")));
-    }
-    
-    private void handleList(Player player) {
-        player.sendMessage(ColorUtil.colorize("&6=== Available Collars ==="));
-        
-        Map<String, ConfigManager.CollarConfig> collars = plugin.getAvailableCollars();
-        if (collars.isEmpty()) {
-            player.sendMessage(ColorUtil.colorize("&cNo collars configured!"));
-            return;
+
+    private void equipCollar(Player player, ConfigManager.CollarData collarData) {
+        ItemStack item = new ItemStack(Material.PAPER);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName(ColorUtil.color(collarData.getDisplayName()));
+            meta.setCustomModelData(collarData.getModelData());
+            item.setItemMeta(meta);
         }
-        
-        String currentCollar = plugin.getActiveCollar(player);
-        
-        for (Map.Entry<String, ConfigManager.CollarConfig> entry : collars.entrySet()) {
-            String collarName = entry.getKey();
-            ConfigManager.CollarConfig config = entry.getValue();
-            
-            boolean hasPermission = PermissionUtil.hasCollarPermission(player, collarName);
-            boolean isCurrent = collarName.equals(currentCollar);
-            
-            String prefix = isCurrent ? "&a» " : (hasPermission ? "&7" : "&c");
-            String suffix = isCurrent ? " &7(current)" : (hasPermission ? "" : " &7(no permission)");
-            
-            String message = prefix + config.getDisplayName() + suffix;
-            if (!config.getDescription().isEmpty()) {
-                message += ColorUtil.colorize("\n&8&o") + config.getDescription();
+        player.getInventory().setHelmet(item);
+        plugin.getPlayerCollarData().setCollar(player.getUniqueId(), collarData.getId());
+        player.sendMessage(plugin.getConfigManager().getMessage("collar-equipped").replace("{collar_name}", collarData.getDisplayName()));
+    }
+
+    private void removeCollar(Player player) {
+        player.getInventory().setHelmet(null);
+        plugin.getPlayerCollarData().setCollar(player.getUniqueId(), null);
+        player.sendMessage(plugin.getConfigManager().getMessage("collar-removed"));
+    }
+
+    @Override
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+        if (args.length == 1) {
+            List<String> subcommands = new ArrayList<>(List.of("gui", "list", "wear", "remove", "help"));
+            if (sender.hasPermission("playercollars.admin")) {
+                subcommands.add("reload");
             }
-            
-            player.sendMessage(ColorUtil.colorize(message));
+            return subcommands.stream().filter(s -> s.startsWith(args[0].toLowerCase())).collect(Collectors.toList());
         }
-    }
-    
-    private void handleWear(Player player, String collarName) {
-        if (!PermissionUtil.hasWearPermission(player)) {
-            player.sendMessage(ColorUtil.colorize(plugin.getConfigManager().getMessage("no-permission")));
-            return;
+        if (args.length == 2 && args[0].equalsIgnoreCase("wear")) {
+            return plugin.getConfigManager().getCollars().keySet().stream().filter(s -> s.startsWith(args[1].toLowerCase())).collect(Collectors.toList());
         }
-        
-        if (!PermissionUtil.hasCollarPermission(player, collarName)) {
-            player.sendMessage(ColorUtil.colorize(plugin.getConfigManager().getMessage("no-permission")));
-            return;
-        }
-        
-        plugin.equipCollar(player, collarName);
-    }
-    
-    private void handleRemove(Player player) {
-        if (!PermissionUtil.hasRemovePermission(player)) {
-            player.sendMessage(ColorUtil.colorize(plugin.getConfigManager().getMessage("no-permission")));
-            return;
-        }
-        
-        plugin.removeCollar(player);
-    }
-    
-    private void handleGUI(Player player) {
-        if (!PermissionUtil.hasGUIPermission(player)) {
-            player.sendMessage(ColorUtil.colorize(plugin.getConfigManager().getMessage("no-permission")));
-            return;
-        }
-        
-        CollarGUI gui = plugin.createCollarGUI(player);
-        gui.open();
-    }
-    
-    private void handleInfo(Player player) {
-        String activeCollar = plugin.getActiveCollar(player);
-        
-        if (activeCollar == null) {
-            player.sendMessage(ColorUtil.colorize("&7You are not wearing any collar."));
-            return;
-        }
-        
-        ConfigManager.CollarConfig config = plugin.getAvailableCollars().get(activeCollar);
-        if (config != null) {
-            player.sendMessage(ColorUtil.colorize("&6Current collar: " + config.getDisplayName()));
-            if (!config.getDescription().isEmpty()) {
-                player.sendMessage(ColorUtil.colorize("&7" + config.getDescription()));
-            }
-        } else {
-            player.sendMessage(ColorUtil.colorize("&7Current collar: " + activeCollar));
-        }
-    }
-    
-    private void handleAdmin(Player player, String adminCommand) {
-        if (!PermissionUtil.hasAdminPermission(player)) {
-            player.sendMessage(ColorUtil.colorize(plugin.getConfigManager().getMessage("no-permission")));
-            return;
-        }
-        
-        if (adminCommand.equalsIgnoreCase("reload")) {
-            if (!PermissionUtil.hasReloadPermission(player)) {
-                player.sendMessage(ColorUtil.colorize(plugin.getConfigManager().getMessage("no-permission")));
-                return;
-            }
-            
-            plugin.getConfigManager().reload();
-            player.sendMessage(ColorUtil.colorize("&aConfiguration reloaded!"));
-        } else {
-            player.sendMessage(ColorUtil.colorize("&cUnknown admin command. Use 'reload'."));
-        }
+        return List.of();
     }
 }
