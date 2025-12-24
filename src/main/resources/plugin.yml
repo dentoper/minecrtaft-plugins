@@ -1,0 +1,44 @@
+name: PlayerCollars
+version: "1.0.0"
+main: com.dentoper.playercollars.PlayerCollarsPlugin
+description: Модная система ошейников для игроков
+authors: [dentoper]
+api-version: "1.21"
+
+commands:
+  collar:
+    description: Управление ошейниками
+    usage: /collar help
+    aliases: [collars]
+
+permissions:
+  playercollars.use:
+    description: Использовать ошейники
+    default: true
+  playercollars.wear:
+    description: Надевать ошейники
+    default: true
+  playercollars.remove:
+    description: Снимать ошейники
+    default: true
+  playercollars.gui:
+    description: Открывать GUI
+    default: true
+  playercollars.collar.standard:
+    description: Доступ к стандартному ошейнику
+    default: true
+  playercollars.collar.leather:
+    description: Доступ к кожаному ошейнику
+    default: op
+  playercollars.collar.gold:
+    description: Доступ к золотому ошейнику
+    default: op
+  playercollars.collar.diamond:
+    description: Доступ к алмазному ошейнику
+    default: op
+  playercollars.admin:
+    description: Администраторские команды
+    default: op
+  playercollars.admin.reload:
+    description: Перезагрузка конфига
+    default: op
