@@ -570,8 +570,8 @@ public class CollarCommand implements CommandExecutor, TabCompleter {
         Location to = owner.getLocation().clone();
 
         if (settings.teleportEffects()) {
-            from.getWorld().spawnParticle(org.bukkit.Particle.SMOKE_NORMAL, from, 30, 0.5, 0.5, 0.5, 0.02);
-            to.getWorld().spawnParticle(org.bukkit.Particle.SMOKE_NORMAL, to, 30, 0.5, 0.5, 0.5, 0.02);
+            from.getWorld().spawnParticle(org.bukkit.Particle.SMOKE, from, 30, 0.5, 0.5, 0.5, 0.02);
+            to.getWorld().spawnParticle(org.bukkit.Particle.SMOKE, to, 30, 0.5, 0.5, 0.5, 0.02);
             to.getWorld().playSound(to, org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 1f, 1f);
             to.getWorld().spawnParticle(org.bukkit.Particle.CLOUD, to, 20, 0.5, 0.8, 0.5, 0.01);
         }
