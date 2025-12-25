@@ -13,7 +13,6 @@ public class PlayerCollarsPlugin extends JavaPlugin {
     private static PlayerCollarsPlugin instance;
     private ConfigManager configManager;
     private PlayerCollarData playerCollarData;
-    private CollarGUI collarGUI;
 
     @Override
     public void onEnable() {
@@ -21,13 +20,11 @@ public class PlayerCollarsPlugin extends JavaPlugin {
         
         this.configManager = new ConfigManager(this);
         this.playerCollarData = new PlayerCollarData(this);
-        this.collarGUI = new CollarGUI(this);
 
         getCommand("collar").setExecutor(new CollarCommand(this));
         
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
         getServer().getPluginManager().registerEvents(new ArmorEquipListener(this), this);
-        getServer().getPluginManager().registerEvents(collarGUI, this);
 
         Logger logger = getLogger();
         logger.info("PlayerCollars has been enabled!");
@@ -52,9 +49,5 @@ public class PlayerCollarsPlugin extends JavaPlugin {
 
     public PlayerCollarData getPlayerCollarData() {
         return playerCollarData;
-    }
-
-    public CollarGUI getCollarGUI() {
-        return collarGUI;
     }
 }
