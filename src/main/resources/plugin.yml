@@ -1,45 +1,26 @@
-name: PlayerCollars
+name: SmartHarvestPlus
 version: 1.0.0
-main: com.dentoper.playercollars.PlayerCollarsPlugin
-description: Collar system for players
+main: com.dentoper.smartharvest.SmartHarvestPlus
+description: Smart farming plugin for Minecraft Paper 1.21 - auto-harvest and replant crops
 authors: [dentoper]
 api-version: "1.21"
 
 commands:
-  collar:
-    description: Collar management
-    usage: /collar help
-    aliases: [collars]
+  smartharvest:
+    description: SmartHarvestPlus main command
+    usage: /smartharvest help
+    aliases: [sh]
+  sh:
+    description: SmartHarvestPlus alias command
+    usage: /sh help
 
 permissions:
-  playercollars.collar.*:
-    description: Use any collar
-    default: op
-  playercollars.give:
-    description: Put collars on other players
-    default: op
-  playercollars.leash:
-    description: Leash / drag pets
-    default: op
-  playercollars.call:
-    description: Pet can call the owner
+  smartharvest.use:
+    description: Use SmartHarvestPlus features
     default: true
-  playercollars.summon:
-    description: Owner can summon the pet
-    default: op
-  playercollars.admin:
-    description: Admin commands
-    default: op
-
-  playercollars.collar.standard:
-    description: Standard collar
+  smartharvest.gui:
+    description: Open SmartHarvestPlus GUI
     default: true
-  playercollars.collar.leather:
-    description: Leather collar
-    default: op
-  playercollars.collar.gold:
-    description: Gold collar
-    default: op
-  playercollars.collar.diamond:
-    description: Diamond collar
+  smartharvest.admin:
+    description: Admin commands (reload)
     default: op
