@@ -1,0 +1,33 @@
+settings:
+  require_hoe_for_auto_replant: true
+  affected_crops:
+    - WHEAT
+    - CARROTS
+    - POTATOES
+    - BEETROOTS
+    - NETHER_WART
+  crop_to_seed_map:
+    WHEAT: WHEAT_SEEDS
+    CARROTS: CARROT
+    POTATOES: POTATO
+    BEETROOTS: BEETROOT_SEEDS
+    NETHER_WART: NETHER_WART
+  debug: false
+
+default_player_settings:
+  enabled: true
+  aoe_radius: 1
+  sound: "BLOCK_NOTE_BLOCK_PLING"
+  particle: "VILLAGER_HAPPY"
+
+available_options:
+  sounds:
+    - "BLOCK_NOTE_BLOCK_PLING"
+    - "BLOCK_NOTE_BLOCK_HARP"
+    - "BLOCK_NOTE_BLOCK_BELL"
+    - "ENTITY_EXPERIENCE_ORB_PICKUP"
+  particles:
+    - "VILLAGER_HAPPY"
+    - "HEART"
+    - "NOTE"
+    - "TOTEM_OF_UNDYING"

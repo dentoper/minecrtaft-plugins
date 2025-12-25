@@ -1,0 +1,7 @@
+no_permission: "&#D0D0D0У вас &#FF6D54нет прав &7для выполнения этой команды."
+reload_success: "&#D0D0D0Конфигурация SmartHarvest &#93FF5Cуспешно &7перезагружена!"
+reload_usage: "&#D0D0D0Использование&7: &#FFC952/smartharvest reload"
+unknown_command: "&#FF6D54Ошибка&7: &#D0D0D0Неизвестная подкоманда. Используйте: &#FFC952/sh reload"
+player_only: "&#FF6D54Ошибка&7: &#D0D0D0Эту команду может использовать только игрок."
+option_saved: "&#93FF5CУспех&7: &#D0D0D0Настройка сохранена!"
+sound_not_found: "&#FF6D54Ошибка&7: &#D0D0D0Не удалось воспроизвести звук."

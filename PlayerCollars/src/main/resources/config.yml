@@ -1,0 +1,73 @@
+# PlayerCollars Configuration
+# Version: 1.0.0
+
+# Collar types configuration
+collars:
+  standard:
+    display-name: "&fStandard Collar"
+    description: "Basic collar with no special features"
+    model-data: 0
+    permission: "playercollars.collar.standard"
+  
+  leather:
+    display-name: "&6Leather Collar"
+    description: "Improved collar with basic features"
+    model-data: 1
+    permission: "playercollars.collar.leather"
+  
+  gold:
+    display-name: "&eGold Collar"
+    description: "Premium collar with advanced features"
+    model-data: 2
+    permission: "playercollars.collar.gold"
+  
+  diamond:
+    display-name: "&bDiamond Collar"
+    description: "Ultimate collar with all features"
+    model-data: 3
+    permission: "playercollars.collar.diamond"
+
+# Leash settings
+leash:
+  max-distance: 10.0
+  pull-force: 0.5
+  break-chance: 0.1
+
+# Summon settings
+summon:
+  cooldown-seconds: 30
+  max-range: 50.0
+  particle-effects: true
+
+# Call settings (pet calls owner)
+call:
+  cooldown-seconds: 60
+  max-range: 30.0
+
+# Messages configuration
+messages:
+  prefix: "&8[&6PlayerCollars&8] &r"
+  
+  collar-given: "&aYou have been given a {collar} by {player}!"
+  collar-received: "&aYou gave {player} a {collar}!"
+  
+  leash-attached: "&aYou have leashed {player}!"
+  leash-detached: "&cYou have unleashed {player}!"
+  leash-broken: "&cThe leash broke!"
+  
+  summon-success: "&a{player} has been summoned!"
+  summon-cooldown: "&cYou must wait {seconds} seconds before summoning again!"
+  
+  call-success: "&aYou have called your owner!"
+  call-cooldown: "&cYou must wait {seconds} seconds before calling again!"
+  
+  no-permission: "&cYou don't have permission to use this collar!"
+  player-not-found: "&cPlayer not found!"
+  invalid-collar: "&cInvalid collar type!"
+  
+  help-header: "&6=== PlayerCollars Help ==="
+  help-give: "&e/collar give <player> <type> &7- Give a collar to a player"
+  help-leash: "&e/collar leash <player> &7- Leash a player"
+  help-summon: "&e/collar summon <player> &7- Summon a player"
+  help-call: "&e/collar call &7- Call your owner"
+  help-unleash: "&e/collar unleash &7- Unleash a player"
