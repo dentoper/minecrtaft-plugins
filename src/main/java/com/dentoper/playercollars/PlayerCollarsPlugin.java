@@ -3,6 +3,7 @@ package com.dentoper.playercollars;
 import com.dentoper.playercollars.commands.CollarCommand;
 import com.dentoper.playercollars.config.ConfigManager;
 import com.dentoper.playercollars.data.PlayerCollarData;
+import com.dentoper.playercollars.gui.CollarGUI;
 import com.dentoper.playercollars.listeners.ArmorEquipListener;
 import com.dentoper.playercollars.listeners.PlayerJoinListener;
 import org.bukkit.plugin.java.JavaPlugin;
