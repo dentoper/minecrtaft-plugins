@@ -21,9 +21,12 @@ import java.util.stream.Collectors;
 
 public class CollarCommand implements CommandExecutor, TabCompleter {
     private final PlayerCollarsPlugin plugin;
+    private final CollarGUI collarGUI;
 
     public CollarCommand(PlayerCollarsPlugin plugin) {
         this.plugin = plugin;
+        this.collarGUI = new CollarGUI(plugin);
+        plugin.getServer().getPluginManager().registerEvents(collarGUI, plugin);
     }
 
     @Override
@@ -40,7 +43,7 @@ public class CollarCommand implements CommandExecutor, TabCompleter {
 
         switch (args[0].toLowerCase()) {
             case "gui" -> {
-                plugin.getCollarGUI().open(player);
+                collarGUI.open(player);
                 return true;
             }
             case "list" -> {
