@@ -1,0 +1,20 @@
+name: SmartHarvestPlus
+version: 1.0.0
+main: com.dentoper.smartharvest.SmartHarvestPlus
+description: Automated harvesting plugin with one-click harvesting and auto-replanting
+authors: [dentoper]
+api-version: "1.21"
+
+commands:
+  smartharvest:
+    description: Open SmartHarvestPlus settings menu
+    usage: /smartharvest
+    aliases: [sh]
+  
+permissions:
+  smartharvest.use:
+    description: Use SmartHarvestPlus features
+    default: true
+  smartharvest.admin:
+    description: Admin commands for SmartHarvestPlus
+    default: op
