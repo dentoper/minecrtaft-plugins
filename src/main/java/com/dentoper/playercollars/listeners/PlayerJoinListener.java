@@ -2,14 +2,13 @@ package com.dentoper.playercollars.listeners;
 
 import com.dentoper.playercollars.PlayerCollarsPlugin;
 import com.dentoper.playercollars.config.ConfigManager;
+import com.dentoper.playercollars.data.PlayerCollarData;
+import com.dentoper.playercollars.utils.CollarItemUtil;
 import com.dentoper.playercollars.utils.ColorUtil;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 public class PlayerJoinListener implements Listener {
     private final PlayerCollarsPlugin plugin;
@@ -21,24 +20,19 @@ public class PlayerJoinListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        String collarId = plugin.getPlayerCollarData().getCollar(player.getUniqueId());
-        
+        PlayerCollarData data = plugin.getPlayerCollarData();
+
+        String collarId = data.getCurrentCollar(player.getUniqueId());
         if (collarId != null) {
             ConfigManager.CollarData collarData = plugin.getConfigManager().getCollar(collarId);
             if (collarData != null) {
-                equipCollar(player, collarData);
+                player.getInventory().setHelmet(CollarItemUtil.create(plugin, collarData));
             }
         }
-    }
 
-    private void equipCollar(Player player, ConfigManager.CollarData collarData) {
-        ItemStack item = new ItemStack(Material.PAPER);
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            meta.setDisplayName(ColorUtil.color(collarData.getDisplayName()));
-            meta.setCustomModelData(collarData.getModelData());
-            item.setItemMeta(meta);
+        if (data.isLeashed(player.getUniqueId())) {
+            player.setCustomName(ColorUtil.color("&c[ПРИВЯЗАН] &f" + player.getName()));
+            player.setCustomNameVisible(true);
         }
-        player.getInventory().setHelmet(item);
     }
 }
