@@ -13,21 +13,23 @@ public class TradeSystemPlugin extends JavaPlugin {
     public void onEnable() {
         instance = this;
         
-        // Initialize TradeSessionManager
         TradeSessionManager.initialize(this);
         
-        // Register commands
         getCommand("trade").setExecutor(new TradeCommand(this));
         
-        // Register listeners
         getServer().getPluginManager().registerEvents(new InventoryListener(this), this);
         
-        getLogger().info("TradeSystem plugin enabled!");
+        getLogger().info("TradeSystem v2.0.0 enabled!");
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("TradeSystem plugin disabled!");
+        TradeSessionManager manager = TradeSessionManager.getInstance();
+        if (manager != null) {
+            manager.cleanupAll();
+        }
+        
+        getLogger().info("TradeSystem v2.0.0 disabled!");
     }
 
     public static TradeSystemPlugin getInstance() {

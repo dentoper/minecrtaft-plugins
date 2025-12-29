@@ -1,12 +1,12 @@
 name: TradeSystem
-version: 1.0.0
+version: 2.0.0
 main: com.tradesystem.TradeSystemPlugin
 description: Система торговли между игроками с интерфейсом двойного сундука
-api-version: 1.21
+api-version: "1.21"
 commands:
   trade:
     description: Предложить трейд другому игроку
-    usage: /trade [игрок]
+    usage: /trade <игрок>
     permission: tradesystem.trade
 permissions:
   tradesystem.trade:
