@@ -1,6 +1,7 @@
 package com.tradesystem;
 
 import com.tradesystem.command.TradeCommand;
+import com.tradesystem.config.TradeConfig;
 import com.tradesystem.listener.InventoryListener;
 import com.tradesystem.trade.TradeSessionManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -8,10 +9,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class TradeSystemPlugin extends JavaPlugin {
 
     private static TradeSystemPlugin instance;
+    private TradeConfig tradeConfig;
 
     @Override
     public void onEnable() {
         instance = this;
+        
+        this.tradeConfig = new TradeConfig(this);
         
         TradeSessionManager.initialize(this);
         
@@ -34,5 +38,9 @@ public class TradeSystemPlugin extends JavaPlugin {
 
     public static TradeSystemPlugin getInstance() {
         return instance;
+    }
+
+    public TradeConfig getTradeConfig() {
+        return tradeConfig;
     }
 }
