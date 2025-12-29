@@ -31,9 +31,6 @@ public class TradeInventoryManager {
     /** Слоты-разделители между сторонами */
     private static final int[] DIVIDER_SLOTS = {13, 22, 31, 40};
 
-    /** Слоты для стекол согласия по углам сундука */
-    private static final int[] GLASS_CORNER_SLOTS = {18, 26, 36, 44};
-
     /** Сессия торговли, к которой привязан этот менеджер */
     private final TradeSession session;
     
@@ -112,11 +109,6 @@ public class TradeInventoryManager {
         ItemStack divider = pane(Material.GRAY_STAINED_GLASS_PANE);
         for (int slot : DIVIDER_SLOTS) {
             inv.setItem(slot, divider);
-        }
-
-        ItemStack consentGlass = pane(Material.LIGHT_BLUE_STAINED_GLASS_PANE);
-        for (int slot : GLASS_CORNER_SLOTS) {
-            inv.setItem(slot, consentGlass);
         }
 
         for (int slot : PLAYER1_OFFER_SLOTS) {

@@ -53,8 +53,7 @@ public class TradeConfig {
         config.addDefault("loc.player2", 5);
         config.addDefault("loc.clock", 22);
 
-        // Области и декоративные элементы
-        config.addDefault("loc.corners", Arrays.asList(18, 26, 36, 44));
+        // Области для предложений игроков
         config.addDefault("loc.offer_p1", Arrays.asList(10, 11, 12, 19, 20, 21, 28, 29, 30, 37, 38, 39));
         config.addDefault("loc.offer_p2", Arrays.asList(14, 15, 16, 23, 24, 25, 32, 33, 34, 41, 42, 43));
 
