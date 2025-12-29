@@ -62,7 +62,6 @@ public class TradeEditorInventory implements Listener {
         CLOCK("Часы", Material.CLOCK, "§e§l⏰ ЧАСЫ", true),
         LABEL_P1("Подпись P1", Material.BLUE_STAINED_GLASS_PANE, "§9§lP1 ПОДПИСЬ", true),
         LABEL_P2("Подпись P2", Material.BLUE_STAINED_GLASS_PANE, "§9§lP2 ПОДПИСЬ", true),
-        CORNER("Угол", Material.LIGHT_BLUE_STAINED_GLASS_PANE, "§b§l◆ КОРНЕР", false),
         OFFER_P1("Область P1", Material.BARRIER, "§a§l█ ОБЛАСТЬ P1", false),
         OFFER_P2("Область P2", Material.BARRIER, "§c§l█ ОБЛАСТЬ P2", false),
         EMPTY("Пусто", Material.GRAY_STAINED_GLASS_PANE, "§7- ПУСТО -", false);
@@ -155,11 +154,6 @@ public class TradeEditorInventory implements Listener {
         setUnique(session, config.getInt("loc.clock", 22), ElementType.CLOCK);
         setUnique(session, config.getInt("loc.player1", 3), ElementType.LABEL_P1);
         setUnique(session, config.getInt("loc.player2", 5), ElementType.LABEL_P2);
-
-        List<Integer> corners = config.getIntList("loc.corners", Arrays.asList(18, 26, 36, 44));
-        for (Integer slot : corners) {
-            setMulti(session, slot, ElementType.CORNER);
-        }
 
         List<Integer> p1 = config.getIntList("loc.offer_p1", Arrays.asList(10, 11, 12, 19, 20, 21, 28, 29, 30, 37, 38, 39));
         for (Integer slot : p1) {
@@ -433,9 +427,6 @@ public class TradeEditorInventory implements Listener {
         session.layout[3] = ElementType.LABEL_P1;
         session.layout[5] = ElementType.LABEL_P2;
 
-        for (int s : new int[]{18, 26, 36, 44}) {
-            session.layout[s] = ElementType.CORNER;
-        }
         for (int s : new int[]{10, 11, 12, 19, 20, 21, 28, 29, 30, 37, 38, 39}) {
             session.layout[s] = ElementType.OFFER_P1;
         }
@@ -468,7 +459,6 @@ public class TradeEditorInventory implements Listener {
         config.set("loc.clock", result.clockSlot);
         config.set("loc.player1", result.labelP1Slot);
         config.set("loc.player2", result.labelP2Slot);
-        config.set("loc.corners", result.cornerSlots);
         config.set("loc.offer_p1", result.offerP1Slots);
         config.set("loc.offer_p2", result.offerP2Slots);
 
@@ -478,8 +468,16 @@ public class TradeEditorInventory implements Listener {
         }
 
         player.sendMessage("§a[✓] GUI успешно сохранён!");
+        
+        // Закрываем и переоткрываем редактор с новыми значениями
         sessions.remove(player.getUniqueId());
         player.closeInventory();
+        
+        // Переоткрываем редактор через 2 тика чтобы инвентарь успел закрыться
+        org.bukkit.Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            openEditor(player);
+            player.sendMessage("§7[i] Редактор обновлен с новыми значениями.");
+        }, 2L);
     }
 
     private static final class ValidationResult {
@@ -493,14 +491,13 @@ public class TradeEditorInventory implements Listener {
         private final int labelP1Slot;
         private final int labelP2Slot;
 
-        private final List<Integer> cornerSlots;
         private final List<Integer> offerP1Slots;
         private final List<Integer> offerP2Slots;
 
         private ValidationResult(boolean ok, String message,
                                  int statusP1Slot, int statusP2Slot, int exitSlot, int clockSlot,
                                  int labelP1Slot, int labelP2Slot,
-                                 List<Integer> cornerSlots, List<Integer> offerP1Slots, List<Integer> offerP2Slots) {
+                                 List<Integer> offerP1Slots, List<Integer> offerP2Slots) {
             this.ok = ok;
             this.message = message;
             this.statusP1Slot = statusP1Slot;
@@ -509,21 +506,20 @@ public class TradeEditorInventory implements Listener {
             this.clockSlot = clockSlot;
             this.labelP1Slot = labelP1Slot;
             this.labelP2Slot = labelP2Slot;
-            this.cornerSlots = cornerSlots;
             this.offerP1Slots = offerP1Slots;
             this.offerP2Slots = offerP2Slots;
         }
 
         private static ValidationResult fail(String message) {
             return new ValidationResult(false, message, -1, -1, -1, -1, -1, -1,
-                    Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+                    Collections.emptyList(), Collections.emptyList());
         }
 
         private static ValidationResult ok(int statusP1Slot, int statusP2Slot, int exitSlot, int clockSlot,
                                            int labelP1Slot, int labelP2Slot,
-                                           List<Integer> cornerSlots, List<Integer> offerP1Slots, List<Integer> offerP2Slots) {
+                                           List<Integer> offerP1Slots, List<Integer> offerP2Slots) {
             return new ValidationResult(true, "OK", statusP1Slot, statusP2Slot, exitSlot, clockSlot,
-                    labelP1Slot, labelP2Slot, cornerSlots, offerP1Slots, offerP2Slots);
+                    labelP1Slot, labelP2Slot, offerP1Slots, offerP2Slots);
         }
     }
 
@@ -537,11 +533,6 @@ public class TradeEditorInventory implements Listener {
 
         if (statusP1 == null || statusP2 == null || exit == null || clock == null) {
             return ValidationResult.fail("Обязательные элементы отсутствуют (согласие/выход/часы)");
-        }
-
-        List<Integer> corners = collect(session, ElementType.CORNER);
-        if (corners.size() != 4) {
-            return ValidationResult.fail("Должно быть ровно 4 угловых стекла (сейчас: " + corners.size() + ")");
         }
 
         List<Integer> offerP1 = collect(session, ElementType.OFFER_P1);
@@ -560,12 +551,9 @@ public class TradeEditorInventory implements Listener {
             return ValidationResult.fail("Уникальные элементы пересекаются по слотам");
         }
 
-        // Проверка: области не должны пересекаться с уникальными элементами/углами
+        // Проверка: области не должны пересекаться с уникальными элементами
         if (!Collections.disjoint(offerP1, uniqueSlots) || !Collections.disjoint(offerP2, uniqueSlots)) {
             return ValidationResult.fail("Область слотов игроков пересекается с кнопками/часами/подписями");
-        }
-        if (!Collections.disjoint(offerP1, corners) || !Collections.disjoint(offerP2, corners)) {
-            return ValidationResult.fail("Область слотов игроков пересекается с углами");
         }
 
         // Проверка: области P1 и P2 не пересекаются
@@ -577,7 +565,7 @@ public class TradeEditorInventory implements Listener {
 
         return ValidationResult.ok(statusP1, statusP2, exit, clock, labelP1 != null ? labelP1 : -1,
                 labelP2 != null ? labelP2 : -1,
-                corners, offerP1, offerP2);
+                offerP1, offerP2);
     }
 
     private Integer findUnique(EditorSession session, ElementType type) {

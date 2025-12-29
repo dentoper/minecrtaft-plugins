@@ -134,6 +134,20 @@ public class TradeSessionManager {
     }
 
     /**
+     * Закрывает все активные сессии с указанным сообщением.
+     * Используется при перезагрузке конфигурации.
+     * 
+     * @param message сообщение для отправки игрокам
+     */
+    public void closeAllSessions(String message) {
+        Set<TradeSession> unique = new HashSet<>(activeByPlayer.values());
+        for (TradeSession session : unique) {
+            session.forceCancel(message);
+        }
+        activeByPlayer.clear();
+    }
+
+    /**
      * Создает или заменяет запрос на трейд.
      * 
      * @param initiator игрок, инициирующий запрос

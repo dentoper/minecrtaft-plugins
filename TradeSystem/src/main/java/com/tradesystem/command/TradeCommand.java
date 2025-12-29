@@ -11,12 +11,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-public class TradeCommand implements CommandExecutor {
+public class TradeCommand implements CommandExecutor, TabCompleter {
 
     private final TradeSystemPlugin plugin;
 
@@ -36,6 +40,15 @@ public class TradeCommand implements CommandExecutor {
         if (args.length == 0) {
             player.sendMessage("§cИспользование: /trade <игрок> или /trade editgui");
             return true;
+        }
+
+        // Команда reload - перезагрузка плагина
+        if (args[0].equalsIgnoreCase("reload")) {
+            if (!player.hasPermission("tradesystem.admin")) {
+                player.sendMessage("§cУ вас нет прав на использование этой команды!");
+                return true;
+            }
+            return handleReloadCommand(player);
         }
 
         // Визуальный редактор GUI (/trade editgui | /trade edit gui)
@@ -154,7 +167,6 @@ public class TradeCommand implements CommandExecutor {
                 config.set("loc.player1", 3);
                 config.set("loc.player2", 5);
                 config.set("loc.clock", 22);
-                config.set("loc.corners", Arrays.asList(18, 26, 36, 44));
                 config.set("loc.offer_p1", Arrays.asList(10, 11, 12, 19, 20, 21, 28, 29, 30, 37, 38, 39));
                 config.set("loc.offer_p2", Arrays.asList(14, 15, 16, 23, 24, 25, 32, 33, 34, 41, 42, 43));
                 
@@ -287,6 +299,33 @@ public class TradeCommand implements CommandExecutor {
     }
 
     /**
+     * Обрабатывает команду перезагрузки плагина.
+     * 
+     * @param player администратор, выполняющий команду
+     * @return true если команда обработана
+     */
+    private boolean handleReloadCommand(Player player) {
+        plugin.getLogger().info("Перезагрузка TradeSystem инициирована игроком " + player.getName());
+        
+        // Закрываем все активные торговые сессии
+        TradeSessionManager manager = TradeSessionManager.getInstance();
+        int closedSessions = manager.getActiveSessions().size();
+        manager.closeAllSessions("§e[⚠] Конфигурация перезагружена, трейд прерван");
+        
+        // Перезагружаем конфигурацию
+        plugin.getTradeConfig().reload();
+        
+        // Сообщаем администратору
+        player.sendMessage("§a[✓] TradeSystem успешно перезагружена!");
+        if (closedSessions > 0) {
+            player.sendMessage("§7Закрыто активных сессий: " + closedSessions);
+        }
+        
+        plugin.getLogger().info("TradeSystem перезагружена. Закрыто сессий: " + closedSessions);
+        return true;
+    }
+
+    /**
      * Перерисовывает все активные торговые инвентари.
      */
     private void refreshAllInventories() {
@@ -294,5 +333,100 @@ public class TradeCommand implements CommandExecutor {
         for (TradeSession session : sessions) {
             session.getGuiManager().updateInventories();
         }
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        List<String> completions = new ArrayList<>();
+        
+        if (!(sender instanceof Player)) {
+            return completions;
+        }
+        
+        Player player = (Player) sender;
+        
+        // /trade <TAB>
+        if (args.length == 1) {
+            if (player.hasPermission("tradesystem.admin")) {
+                completions.add("editgui");
+                completions.add("edit");
+                completions.add("reload");
+            }
+            
+            // Добавляем список игроков онлайн
+            if (player.hasPermission("tradesystem.trade")) {
+                completions.addAll(Bukkit.getOnlinePlayers().stream()
+                        .map(Player::getName)
+                        .filter(name -> !name.equals(player.getName()))
+                        .collect(Collectors.toList()));
+            }
+            
+            return completions.stream()
+                    .filter(s -> s.toLowerCase().startsWith(args[0].toLowerCase()))
+                    .sorted()
+                    .collect(Collectors.toList());
+        }
+        
+        // /trade editgui <TAB>
+        if (args.length == 2 && args[0].equalsIgnoreCase("editgui")) {
+            if (player.hasPermission("tradesystem.admin")) {
+                completions.add("help");
+                completions.add("reset");
+            }
+            
+            return completions.stream()
+                    .filter(s -> s.toLowerCase().startsWith(args[1].toLowerCase()))
+                    .sorted()
+                    .collect(Collectors.toList());
+        }
+        
+        // /trade edit <TAB>
+        if (args.length == 2 && args[0].equalsIgnoreCase("edit")) {
+            if (player.hasPermission("tradesystem.admin")) {
+                completions.add("name");
+                completions.add("loc");
+            }
+            
+            return completions.stream()
+                    .filter(s -> s.toLowerCase().startsWith(args[1].toLowerCase()))
+                    .sorted()
+                    .collect(Collectors.toList());
+        }
+        
+        // /trade edit name <TAB>
+        if (args.length == 3 && args[0].equalsIgnoreCase("edit") && args[1].equalsIgnoreCase("name")) {
+            if (player.hasPermission("tradesystem.admin")) {
+                completions.addAll(Arrays.asList("title", "agree", "decline", "waiting", "exit", 
+                        "player1", "player2", "you1", "you2", "clock", "clock_active"));
+            }
+            
+            return completions.stream()
+                    .filter(s -> s.toLowerCase().startsWith(args[2].toLowerCase()))
+                    .sorted()
+                    .collect(Collectors.toList());
+        }
+        
+        // /trade edit loc <TAB>
+        if (args.length == 3 && args[0].equalsIgnoreCase("edit") && args[1].equalsIgnoreCase("loc")) {
+            if (player.hasPermission("tradesystem.admin")) {
+                completions.addAll(Arrays.asList("agree1", "agree2", "exit", "player1", "player2", "clock"));
+            }
+            
+            return completions.stream()
+                    .filter(s -> s.toLowerCase().startsWith(args[2].toLowerCase()))
+                    .sorted()
+                    .collect(Collectors.toList());
+        }
+        
+        // /trade edit name <element> <TAB> - показываем подсказку на формат цветовых кодов
+        if (args.length == 4 && args[0].equalsIgnoreCase("edit") && args[1].equalsIgnoreCase("name")) {
+            if (player.hasPermission("tradesystem.admin")) {
+                completions.add("\"&a<текст>\"");
+                completions.add("\"&#FF5733<текст>\"");
+            }
+            return completions;
+        }
+        
+        return completions;
     }
 }

@@ -22,7 +22,9 @@ public class TradeSystemPlugin extends JavaPlugin {
 
         TradeSessionManager.initialize(this);
 
-        getCommand("trade").setExecutor(new TradeCommand(this));
+        TradeCommand tradeCommand = new TradeCommand(this);
+        getCommand("trade").setExecutor(tradeCommand);
+        getCommand("trade").setTabCompleter(tradeCommand);
 
         getServer().getPluginManager().registerEvents(new InventoryListener(this), this);
         getServer().getPluginManager().registerEvents(editorInventory, this);
