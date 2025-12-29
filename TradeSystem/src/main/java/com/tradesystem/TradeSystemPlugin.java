@@ -28,9 +28,14 @@ public class TradeSystemPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        TradeSessionManager manager = TradeSessionManager.getInstance();
-        if (manager != null) {
-            manager.cleanupAll();
+        // Проверяем был ли TradeSessionManager инициализирован
+        try {
+            TradeSessionManager manager = TradeSessionManager.getInstance();
+            if (manager != null) {
+                manager.cleanupAll();
+            }
+        } catch (IllegalStateException e) {
+            getLogger().warning("TradeSessionManager не был инициализирован, пропуск очистки");
         }
         
         getLogger().info("TradeSystem v2.0.0 disabled!");

@@ -1,0 +1,23 @@
+# TradeSystem Configuration
+# Создано автоматически
+
+names:
+  title: "&5&lТрейд"
+  agree: "&a&l✓ СОГЛАСИЕ"
+  decline: "&7&l✗ ОТМЕНЕНО"
+  waiting: "&7&l? ОЖИДАНИЕ"
+  exit: "&4&l✖ ВЫХОД"
+  player1: "&3&l◄ %player%"
+  player2: "&3&l► %player%"
+  you1: "&2&l◄ ВЫ"
+  you2: "&2&l► ВЫ"
+  clock: "&7&lТАЙМЕР"
+  clock_active: "&6&lТАЙМЕР"
+
+loc:
+  agree1: 47
+  agree2: 51
+  exit: 45
+  player1: 3
+  player2: 5
+  clock: 22
