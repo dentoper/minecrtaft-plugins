@@ -2,6 +2,7 @@ package com.tradesystem.command;
 
 import com.tradesystem.TradeSystemPlugin;
 import com.tradesystem.config.TradeConfig;
+import com.tradesystem.inventory.TradeEditorInventory;
 import com.tradesystem.trade.TradeSession;
 import com.tradesystem.trade.TradeSessionManager;
 import com.tradesystem.util.TradeValidator;
@@ -33,11 +34,20 @@ public class TradeCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         if (args.length == 0) {
-            player.sendMessage("§cИспользование: /trade <игрок> или /trade edit ...");
+            player.sendMessage("§cИспользование: /trade <игрок> или /trade editgui");
             return true;
         }
 
-        // Обработка команды редактирования для администраторов
+        // Визуальный редактор GUI (/trade editgui | /trade edit gui)
+        if (args[0].equalsIgnoreCase("editgui") || (args[0].equalsIgnoreCase("edit") && args.length >= 2 && args[1].equalsIgnoreCase("gui"))) {
+            if (!player.hasPermission("tradesystem.admin")) {
+                player.sendMessage("§cУ вас нет прав на использование этой команды!");
+                return true;
+            }
+            return handleEditGuiCommand(player, args);
+        }
+
+        // Текстовый редактор конфига (/trade edit ...)
         if (args[0].equalsIgnoreCase("edit")) {
             if (!player.hasPermission("tradesystem.admin")) {
                 player.sendMessage("§cУ вас нет прав на использование этой команды!");
@@ -98,6 +108,80 @@ public class TradeCommand implements CommandExecutor {
         }
 
         return true;
+    }
+
+    /**
+     * Обрабатывает команды визуального редактора GUI.
+     * 
+     * @param player администратор, выполняющий команду
+     * @param args аргументы команды
+     * @return true если команда обработана
+     */
+    private boolean handleEditGuiCommand(Player player, String[] args) {
+        // Проверяем наличие подкоманд
+        String subCommand = "";
+        
+        // /trade editgui [subcommand]
+        if (args[0].equalsIgnoreCase("editgui") && args.length > 1) {
+            subCommand = args[1].toLowerCase();
+        }
+        // /trade edit gui [subcommand]
+        else if (args[0].equalsIgnoreCase("edit") && args.length > 2) {
+            subCommand = args[2].toLowerCase();
+        }
+        
+        switch (subCommand) {
+            case "help" -> {
+                player.sendMessage("§6=== Визуальный редактор GUI TradeSystem ===");
+                player.sendMessage("§e/trade editgui §7- открыть визуальный редактор");
+                player.sendMessage("§e/trade editgui reset §7- сбросить на стандартные значения");
+                player.sendMessage("§e/trade editgui help §7- эта справка");
+                player.sendMessage("");
+                player.sendMessage("§7В редакторе:");
+                player.sendMessage("  §eЛКМ §7на слот - изменить элемент");
+                player.sendMessage("  §eПКМ §7на слот - очистить слот");
+                player.sendMessage("  §a✓ СОХРАНИТЬ §7- применить изменения");
+                player.sendMessage("  §c✗ ОТМЕНА §7- закрыть без сохранения");
+                return true;
+            }
+            case "reset" -> {
+                TradeConfig config = plugin.getTradeConfig();
+                
+                // Сбрасываем на дефолтные значения
+                config.set("loc.agree1", 47);
+                config.set("loc.agree2", 51);
+                config.set("loc.exit", 45);
+                config.set("loc.player1", 3);
+                config.set("loc.player2", 5);
+                config.set("loc.clock", 22);
+                config.set("loc.corners", Arrays.asList(18, 26, 36, 44));
+                config.set("loc.offer_p1", Arrays.asList(10, 11, 12, 19, 20, 21, 28, 29, 30, 37, 38, 39));
+                config.set("loc.offer_p2", Arrays.asList(14, 15, 16, 23, 24, 25, 32, 33, 34, 41, 42, 43));
+                
+                player.sendMessage("§a[✓] Настройки GUI сброшены на стандартные значения!");
+                player.sendMessage("§7Изменения будут применены при следующем открытии трейда.");
+                
+                // Обновляем все активные торговые окна
+                refreshAllInventories();
+                return true;
+            }
+            case "" -> {
+                // Открываем визуальный редактор
+                TradeEditorInventory editor = plugin.getEditorInventory();
+                if (editor != null) {
+                    editor.openEditor(player);
+                    player.sendMessage("§a[✓] Визуальный редактор GUI открыт!");
+                } else {
+                    player.sendMessage("§c[✗] Ошибка: редактор не инициализирован!");
+                }
+                return true;
+            }
+            default -> {
+                player.sendMessage("§cНеизвестная подкоманда: " + subCommand);
+                player.sendMessage("§7Используйте §e/trade editgui help §7для справки");
+                return true;
+            }
+        }
     }
 
     /**

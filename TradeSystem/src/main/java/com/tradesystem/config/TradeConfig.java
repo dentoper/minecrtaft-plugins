@@ -4,6 +4,10 @@ import com.tradesystem.TradeSystemPlugin;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,6 +53,11 @@ public class TradeConfig {
         config.addDefault("loc.player2", 5);
         config.addDefault("loc.clock", 22);
 
+        // Области и декоративные элементы
+        config.addDefault("loc.corners", Arrays.asList(18, 26, 36, 44));
+        config.addDefault("loc.offer_p1", Arrays.asList(10, 11, 12, 19, 20, 21, 28, 29, 30, 37, 38, 39));
+        config.addDefault("loc.offer_p2", Arrays.asList(14, 15, 16, 23, 24, 25, 32, 33, 34, 41, 42, 43));
+
         config.options().copyDefaults(true);
         plugin.saveConfig();
     }
@@ -67,6 +76,23 @@ public class TradeConfig {
 
     public int getInt(String path, int def) {
         return plugin.getConfig().getInt(path, def);
+    }
+
+    public List<Integer> getIntList(String path, List<Integer> def) {
+        if (!plugin.getConfig().contains(path)) {
+            return def != null ? new ArrayList<>(def) : Collections.emptyList();
+        }
+        List<?> raw = plugin.getConfig().getList(path);
+        if (raw == null) {
+            return def != null ? new ArrayList<>(def) : Collections.emptyList();
+        }
+        List<Integer> result = new ArrayList<>();
+        for (Object obj : raw) {
+            if (obj instanceof Number) {
+                result.add(((Number) obj).intValue());
+            }
+        }
+        return result;
     }
 
     public void set(String path, Object value) {
