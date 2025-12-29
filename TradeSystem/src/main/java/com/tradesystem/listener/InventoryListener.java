@@ -73,14 +73,14 @@ public class InventoryListener implements Listener {
             }
 
             // Обработка кнопки выхода (всегда доступна)
-            if (TradeInventoryManager.isExitButtonSlot(rawSlot)) {
+            if (session.getGuiManager().isExitButtonSlot(rawSlot)) {
                 event.setCancelled(true);
                 session.handleExitClick(player);
                 return;
             }
 
             // Обработка слотов статуса игрока 1
-            if (TradeInventoryManager.isPlayer1StatusSlot(rawSlot)) {
+            if (session.getGuiManager().isPlayer1StatusSlot(rawSlot)) {
                 event.setCancelled(true);
                 if (player.getUniqueId().equals(session.getPlayer1Id())) {
                     session.handleStatusClick(player, event.getClick() == ClickType.RIGHT);
@@ -89,7 +89,7 @@ public class InventoryListener implements Listener {
             }
 
             // Обработка слотов статуса игрока 2
-            if (TradeInventoryManager.isPlayer2StatusSlot(rawSlot)) {
+            if (session.getGuiManager().isPlayer2StatusSlot(rawSlot)) {
                 event.setCancelled(true);
                 if (player.getUniqueId().equals(session.getPlayer2Id())) {
                     session.handleStatusClick(player, event.getClick() == ClickType.RIGHT);

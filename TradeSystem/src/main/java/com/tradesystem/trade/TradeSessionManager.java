@@ -112,6 +112,15 @@ public class TradeSessionManager {
     }
 
     /**
+     * Возвращает все активные сессии торговли.
+     * 
+     * @return набор уникальных активных сессий
+     */
+    public Set<TradeSession> getActiveSessions() {
+        return new HashSet<>(activeByPlayer.values());
+    }
+
+    /**
      * Очищает все активные сессии и ожидающие запросы.
      * Вызывается при отключении плагина.
      */

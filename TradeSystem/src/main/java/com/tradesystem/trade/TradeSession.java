@@ -103,6 +103,13 @@ public class TradeSession {
     }
 
     /**
+     * Возвращает экземпляр плагина.
+     */
+    public TradeSystemPlugin getPlugin() {
+        return plugin;
+    }
+
+    /**
      * Возвращает UUID первого игрока.
      */
     public UUID getPlayer1Id() {
