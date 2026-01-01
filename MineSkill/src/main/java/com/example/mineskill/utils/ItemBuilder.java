@@ -35,7 +35,7 @@ public class ItemBuilder {
 
     public ItemBuilder enchanted(boolean enchanted) {
         if (enchanted) {
-            meta.addEnchant(Enchantment.DURABILITY, 1, true);
+            meta.addEnchant(Enchantment.UNBREAKING, 1, true);
         }
         return this;
     }
