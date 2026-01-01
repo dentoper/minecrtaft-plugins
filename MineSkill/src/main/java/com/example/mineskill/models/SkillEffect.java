@@ -10,7 +10,10 @@ public enum SkillEffect {
     MOVEMENT_SPEED(Attribute.GENERIC_MOVEMENT_SPEED),
     REGENERATION(null, PotionEffectType.REGENERATION),
     NIGHT_VISION(null, PotionEffectType.NIGHT_VISION),
-    EVASION(null, null);
+    EVASION(null, null),
+    MINING_SPEED(null, PotionEffectType.HASTE),
+    MINING_XP(null, null),
+    DOUBLE_JUMP(null, null);
 
     private final Attribute attribute;
     private final PotionEffectType potionEffect;

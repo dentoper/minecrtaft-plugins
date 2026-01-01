@@ -3,6 +3,7 @@ package com.example.mineskill.managers;
 import com.example.mineskill.MineSkillPlugin;
 import com.example.mineskill.models.PlayerSkillData;
 import com.example.mineskill.models.Skill;
+import com.example.mineskill.models.SkillQuest;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -77,6 +78,22 @@ public class PlayerDataManager {
             }
         }
 
+        // Загружаем квесты
+        ConfigurationSection questsSection = config.getConfigurationSection(path + ".quests");
+        if (questsSection != null) {
+            for (String skillId : questsSection.getKeys(false)) {
+                String questPath = path + ".quests." + skillId;
+                String questName = config.getString(questPath + ".name", "Quest");
+                int progress = config.getInt(questPath + ".progress", 0);
+                int target = config.getInt(questPath + ".target", 100);
+                double reward = config.getDouble(questPath + ".reward", 1.0);
+                
+                SkillQuest quest = new SkillQuest(skillId, questName, target, reward);
+                quest.setProgress(progress);
+                data.setQuest(skillId, quest);
+            }
+        }
+
         return data;
     }
 
@@ -107,6 +124,18 @@ public class PlayerDataManager {
 
         for (Map.Entry<String, Integer> entry : data.getSkills().entrySet()) {
             config.set(path + ".skills." + entry.getKey(), entry.getValue());
+        }
+
+        // Сохраняем квесты
+        for (Map.Entry<String, SkillQuest> entry : data.getQuests().entrySet()) {
+            String skillId = entry.getKey();
+            SkillQuest quest = entry.getValue();
+            String questPath = path + ".quests." + skillId;
+            
+            config.set(questPath + ".name", quest.getQuestName());
+            config.set(questPath + ".progress", quest.getProgress());
+            config.set(questPath + ".target", quest.getTarget());
+            config.set(questPath + ".reward", quest.getPointReward());
         }
 
         try {

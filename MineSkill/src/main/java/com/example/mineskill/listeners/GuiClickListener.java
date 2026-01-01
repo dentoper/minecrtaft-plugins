@@ -23,6 +23,13 @@ public class GuiClickListener implements Listener {
         String title = event.getView().getTitle();
         String expectedTitle = plugin.getConfig().getString("gui.title", "Дерево Скиллов");
         
+        // Проверяем, не цепочка ли это
+        if (title.contains("Цепочка:")) {
+            event.setCancelled(true);
+            handleChainGuiClick(player, event.getSlot());
+            return;
+        }
+        
         if (!title.equals(expectedTitle)) return;
 
         event.setCancelled(true);
@@ -46,6 +53,13 @@ public class GuiClickListener implements Listener {
             return;
         }
 
-        plugin.getGuiManager().handleSkillClick(player, slot);
+        boolean isRightClick = event.isRightClick();
+        plugin.getGuiManager().handleSkillClick(player, slot, isRightClick);
+    }
+
+    private void handleChainGuiClick(Player player, int slot) {
+        if (slot == com.example.mineskill.gui.SkillChainGui.getBackSlot()) {
+            plugin.getGuiManager().returnFromChainGui(player);
+        }
     }
 }
