@@ -1,0 +1,21 @@
+name: MineSkill
+version: 1.0.0
+main: com.example.mineskill.MineSkillPlugin
+api-version: 1.21
+author: MineSkill Team
+description: Полнофункциональная система скиллов с деревом прокачки
+
+commands:
+  skilltree:
+    description: Открывает дерево скиллов
+    usage: /skilltree <open|info|reset|addpoints>
+    permission: skilltree.use
+    aliases: [skill, skills, st]
+
+permissions:
+  skilltree.use:
+    description: Разрешает использовать дерево скиллов
+    default: true
+  skilltree.admin:
+    description: Административные права (сброс, добавление очков)
+    default: op

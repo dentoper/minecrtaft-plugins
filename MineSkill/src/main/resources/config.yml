@@ -1,0 +1,50 @@
+# MineSkill Configuration File
+
+skill-tree:
+  enable-double-jump: true
+  enable-custom-damage: true
+  skill-point-gain: 1  # очков за каждый уровень
+  
+  # Множители для расчета бонусов
+  multipliers:
+    damage: 0.05
+    armor: 0.5
+    health: 2.0
+    speed: 0.1
+
+gui:
+  title: "Дерево Скиллов"
+  tabs:
+    strength:
+      name: "Сила"
+      item: IRON_SWORD
+      color: "&c"
+    agility:
+      name: "Ловкость"
+      item: FEATHER
+      color: "&a"
+    endurance:
+      name: "Выносливость"
+      item: GOLDEN_APPLE
+      color: "&e"
+    wisdom:
+      name: "Мудрость"
+      item: ENCHANTED_BOOK
+      color: "&b"
+  
+  messages:
+    not-enough-points: "&cНедостаточно очков для покупки скилла!"
+    max-level-reached: "&cМаксимальный уровень скилла достигнут!"
+    requirement-not-met: "&cНе выполнено требование: &e%s"
+    skill-purchased: "&aСкилл &e%s &aуспешно куплен! Уровень: &e%d/%d"
+    skill-reset: "&aВсе скиллы сброшены! Очки возвращены."
+    points-added: "&aИгроку &e%s &aдобавлено &e%d &aочков."
+    no-permission: "&cУ вас нет прав на эту команду!"
+    player-not-found: "&cИгрок не найден!"
+    reload: "&aКонфигурация перезагружена!"
+
+# Точки очков и информации
+info-slots:
+  points: 49
+  info-panel-start: 1
+  info-panel-end: 17
