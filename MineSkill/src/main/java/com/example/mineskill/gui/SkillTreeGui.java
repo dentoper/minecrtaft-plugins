@@ -150,7 +150,10 @@ public class SkillTreeGui {
             Skill skill = skills.get(i);
             int currentLevel = playerData.getSkillLevel(skill.getId());
             
-            ItemStack skillIcon = skill.createIcon(currentLevel, playerData.getSkillPoints());
+            // Получаем квест для этого навыка, если он есть
+            var quest = playerData.getQuest(skill.getId());
+            
+            ItemStack skillIcon = skill.createIcon(currentLevel, playerData.getSkillPoints(), quest);
             inventory.setItem(slot, skillIcon);
         }
     }

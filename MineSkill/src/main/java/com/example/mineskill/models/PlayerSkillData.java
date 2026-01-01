@@ -10,6 +10,7 @@ public class PlayerSkillData {
     private int skillPoints;
     private int totalPoints;
     private final Map<String, Integer> skills;
+    private final Map<String, SkillQuest> quests;
 
     public PlayerSkillData(UUID uuid, String name) {
         this.uuid = uuid;
@@ -17,6 +18,7 @@ public class PlayerSkillData {
         this.skillPoints = 0;
         this.totalPoints = 0;
         this.skills = new HashMap<>();
+        this.quests = new HashMap<>();
     }
 
     public UUID getUuid() {
@@ -95,5 +97,21 @@ public class PlayerSkillData {
             }
         }
         return spent;
+    }
+
+    public Map<String, SkillQuest> getQuests() {
+        return quests;
+    }
+
+    public SkillQuest getQuest(String skillId) {
+        return quests.get(skillId);
+    }
+
+    public void setQuest(String skillId, SkillQuest quest) {
+        quests.put(skillId, quest);
+    }
+
+    public void removeQuest(String skillId) {
+        quests.remove(skillId);
     }
 }

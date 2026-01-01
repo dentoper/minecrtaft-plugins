@@ -12,10 +12,12 @@ import java.util.Map;
 public class GuiManager {
     private final MineSkillPlugin plugin;
     private final Map<Player, SkillTreeGui> openGuis;
+    private final Map<Player, SkillChainGui> openChainGuis;
 
     public GuiManager(MineSkillPlugin plugin) {
         this.plugin = plugin;
         this.openGuis = new HashMap<>();
+        this.openChainGuis = new HashMap<>();
     }
 
     public void openGui(Player player) {
@@ -27,14 +29,36 @@ public class GuiManager {
 
     public void closeGui(Player player) {
         openGuis.remove(player);
+        openChainGuis.remove(player);
     }
 
     public SkillTreeGui getOpenGui(Player player) {
         return openGuis.get(player);
     }
 
+    public SkillChainGui getOpenChainGui(Player player) {
+        return openChainGuis.get(player);
+    }
+
     public boolean hasOpenGui(Player player) {
         return openGuis.containsKey(player);
+    }
+
+    public boolean hasOpenChainGui(Player player) {
+        return openChainGuis.containsKey(player);
+    }
+
+    public void openChainGui(Player player, Skill skill) {
+        SkillChainGui gui = new SkillChainGui(plugin, player, skill);
+        Inventory inventory = gui.createInventory();
+        player.openInventory(inventory);
+        openChainGuis.put(player, gui);
+        openGuis.remove(player); // Убираем из основного GUI
+    }
+
+    public void returnFromChainGui(Player player) {
+        openChainGuis.remove(player);
+        openGui(player);
     }
 
     public void updateGui(Player player) {
@@ -53,7 +77,7 @@ public class GuiManager {
         updateGui(player);
     }
 
-    public void handleSkillClick(Player player, int slot) {
+    public void handleSkillClick(Player player, int slot, boolean isRightClick) {
         SkillTreeGui gui = openGuis.get(player);
         if (gui == null) return;
 
@@ -79,6 +103,13 @@ public class GuiManager {
         Skill skill = skills.get(skillIndex);
         var playerData = plugin.getPlayerDataManager().getPlayerData(player);
 
+        // ПКМ - открываем цепочку навыка
+        if (isRightClick) {
+            openChainGui(player, skill);
+            return;
+        }
+
+        // ЛКМ - покупаем навык
         if (!plugin.getSkillManager().canPurchase(playerData, skill)) {
             String reason;
             if (playerData.getSkillLevel(skill.getId()) >= skill.getMaxLevel()) {
@@ -109,7 +140,9 @@ public class GuiManager {
             .replace("%d", String.valueOf(skill.getMaxLevel()));
         
         player.sendMessage(parseColor(message));
-        updateGui(player);
+        
+        // Обновляем GUI с небольшой задержкой для корректной работы
+        org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> updateGui(player));
     }
 
     private String parseColor(String text) {

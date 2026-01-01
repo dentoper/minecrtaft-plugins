@@ -8,6 +8,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class ItemBuilder {
     private final ItemStack item;
@@ -19,17 +20,21 @@ public class ItemBuilder {
     }
 
     public ItemBuilder name(String name) {
-        meta.setDisplayName(name);
+        meta.setDisplayName(ColorUtil.color(name));
         return this;
     }
 
     public ItemBuilder lore(String... lore) {
-        meta.setLore(Arrays.asList(lore));
+        meta.setLore(Arrays.stream(lore)
+            .map(ColorUtil::color)
+            .collect(Collectors.toList()));
         return this;
     }
 
     public ItemBuilder lore(List<String> lore) {
-        meta.setLore(lore);
+        meta.setLore(lore.stream()
+            .map(ColorUtil::color)
+            .collect(Collectors.toList()));
         return this;
     }
 

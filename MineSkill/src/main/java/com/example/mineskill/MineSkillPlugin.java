@@ -2,10 +2,8 @@ package com.example.mineskill;
 
 import com.example.mineskill.commands.SkillTreeCommand;
 import com.example.mineskill.gui.GuiManager;
-import com.example.mineskill.listeners.DamageListener;
-import com.example.mineskill.listeners.GuiClickListener;
-import com.example.mineskill.listeners.PlayerJoinListener;
-import com.example.mineskill.listeners.PlayerQuitListener;
+import com.example.mineskill.listeners.*;
+import com.example.mineskill.managers.ActionTracker;
 import com.example.mineskill.managers.PlayerDataManager;
 import com.example.mineskill.managers.SkillApplier;
 import com.example.mineskill.managers.SkillManager;
@@ -17,6 +15,7 @@ public class MineSkillPlugin extends JavaPlugin {
     private PlayerDataManager playerDataManager;
     private SkillApplier skillApplier;
     private GuiManager guiManager;
+    private ActionTracker actionTracker;
 
     @Override
     public void onEnable() {
@@ -26,6 +25,7 @@ public class MineSkillPlugin extends JavaPlugin {
         playerDataManager = new PlayerDataManager(this);
         skillApplier = new SkillApplier(this);
         guiManager = new GuiManager(this);
+        actionTracker = new ActionTracker(this);
 
         registerListeners();
         registerCommands();
@@ -48,6 +48,9 @@ public class MineSkillPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(this), this);
         Bukkit.getPluginManager().registerEvents(new PlayerQuitListener(this), this);
         Bukkit.getPluginManager().registerEvents(new DamageListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new MiningActionListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new CombatActionListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new MovementActionListener(this), this);
     }
 
     private void registerCommands() {
@@ -69,5 +72,9 @@ public class MineSkillPlugin extends JavaPlugin {
 
     public GuiManager getGuiManager() {
         return guiManager;
+    }
+
+    public ActionTracker getActionTracker() {
+        return actionTracker;
     }
 }
