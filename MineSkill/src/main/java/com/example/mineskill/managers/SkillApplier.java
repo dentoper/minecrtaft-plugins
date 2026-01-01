@@ -10,9 +10,13 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+
+import java.util.Map;
+import java.util.UUID;
 
 public class SkillApplier {
     private final MineSkillPlugin plugin;
@@ -143,10 +147,10 @@ public class SkillApplier {
             var attr = player.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE);
             if (attr != null) {
                 AttributeModifier modifier = new AttributeModifier(
-                    "mineskill_damage",
+                    new NamespacedKey(plugin, "mineskill_damage"),
                     damageBonus,
                     AttributeModifier.Operation.ADD_NUMBER,
-                    EquipmentSlot.HAND
+                    EquipmentSlotGroup.ANY
                 );
                 attr.addModifier(modifier);
             }
@@ -156,10 +160,10 @@ public class SkillApplier {
             var attr = player.getAttribute(Attribute.GENERIC_ARMOR);
             if (attr != null) {
                 AttributeModifier modifier = new AttributeModifier(
-                    "mineskill_armor",
+                    new NamespacedKey(plugin, "mineskill_armor"),
                     armorBonus,
                     AttributeModifier.Operation.ADD_NUMBER,
-                    EquipmentSlot.CHEST
+                    EquipmentSlotGroup.ANY
                 );
                 attr.addModifier(modifier);
             }
@@ -169,9 +173,10 @@ public class SkillApplier {
             var attr = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
             if (attr != null) {
                 AttributeModifier modifier = new AttributeModifier(
-                    "mineskill_health",
+                    new NamespacedKey(plugin, "mineskill_health"),
                     healthBonus,
-                    AttributeModifier.Operation.ADD_NUMBER
+                    AttributeModifier.Operation.ADD_NUMBER,
+                    EquipmentSlotGroup.ANY
                 );
                 attr.addModifier(modifier);
             }
@@ -181,9 +186,10 @@ public class SkillApplier {
             var attr = player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
             if (attr != null) {
                 AttributeModifier modifier = new AttributeModifier(
-                    "mineskill_speed",
+                    new NamespacedKey(plugin, "mineskill_speed"),
                     speedBonus,
-                    AttributeModifier.Operation.ADD_SCALAR
+                    AttributeModifier.Operation.ADD_SCALAR,
+                    EquipmentSlotGroup.ANY
                 );
                 attr.addModifier(modifier);
             }
