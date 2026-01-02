@@ -1,0 +1,39 @@
+name: MineSkills
+version: ${project.version}
+main: com.example.mineskills.MineSkillsPlugin
+authors: [Developer]
+description: Advanced skill tree system for Paper 1.21
+api-version: 1.20
+
+commands:
+  skilltree:
+    description: Открыть меню скиллов
+    usage: /skilltree <open|info|addpoints>
+    aliases: [skills, st]
+    permission: mineskills.command
+    permission-message: У вас нет прав для использования этой команды!
+    permission-op: mineskills.command.op
+    permission-default: true
+    permission-op-default: true
+    tab-completer: com.example.mineskills.commands.CommandTabCompleter
+
+permissions:
+  mineskills.command:
+    description: Разрешение на использование команд MineSkills
+    default: true
+    children:
+      mineskills.command.open: true
+      mineskills.command.info: true
+      mineskills.command.admin: true
+  mineskills.command.op:
+    description: Разрешение на административные команды
+    default: op
+  mineskills.command.open:
+    description: Разрешение на открытие меню скиллов
+    default: true
+  mineskills.command.info:
+    description: Разрешение на просмотр информации о скиллах
+    default: true
+  mineskills.command.admin:
+    description: Разрешение на административные команды
+    default: op

@@ -1,0 +1,67 @@
+# MineSkills Configuration File
+# Paper 1.21.x Compatible
+
+# Основные настройки скилл-дерева
+skill-tree:
+  enable-double-jump: true
+  enable-mining-tracking: true
+  enable-combat-tracking: true
+  enable-movement-tracking: true
+  
+  # Стоимость действий в очки для получения 1 скилл-поинта
+  point-rewards:
+    mining-blocks: 100      # за 100 добытых блоков → +1 очко
+    combat-damage: 50       # за 50 единиц урона → +1 очко  
+    movement-distance: 1000 # за 1000 блоков пройденного расстояния → +1 очко
+    jumping: 50             # за 50 прыжков → +1 очко
+  
+  # Максимальные уровни скиллов
+  max-skill-levels:
+    POWER_BLOW: 5
+    IRON_SKIN: 5
+    EXTRA_HEALTH: 5
+    SWIFT_MOVEMENT: 5
+    DOUBLE_JUMP: 5
+    EVASION: 5
+    REGENERATION: 5
+    NIGHT_VISION: 5
+    STAMINA: 5
+    MINING: 5
+    FAST_MINING: 5
+    ORE_FINDER: 5
+    LUCK: 5
+    EXPERIENCE: 5
+    MAGIC_SHIELD: 5
+
+# GUI настройки
+gui:
+  title: "§6§lДерево Скиллов"
+  # Цвета веток скиллов (используются Component API)
+  branch-colors:
+    strength: "§c"    # красный
+    agility: "§a"     # зеленый
+    endurance: "§9"   # синий
+    mining: "§6"      # оранжевый
+    wisdom: "§5"      # фиолетовый
+  
+  # Иконки для кнопок веток
+  branch-icons:
+    strength: DIAMOND_SWORD
+    agility: FEATHER
+    endurance: SHIELD
+    mining: DIAMOND_PICKAXE
+    wisdom: AMETHYST_SHARD
+
+# Настройки сохранения данных
+storage:
+  auto-save-interval: 300  # секунды между автосохранением
+  backup-on-start: true    # создавать резервную копию при запуске
+  data-folder: "MineSkills"
+  player-data-file: "players.yml"
+
+# Настройки для разработчиков
+debug:
+  enabled: false
+  log-actions: false
+  log-level-changes: false
+  log-data-loading: false
