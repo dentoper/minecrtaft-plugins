@@ -1,0 +1,14 @@
+name: BetterFurnace
+version: 1.0.0
+main: com.example.betterfurnace.BetterFurnacePlugin
+api-version: 1.21
+author: BetterFurnace Team
+description: Enhanced furnace and campfire display plugin with real-time cooking progress
+
+permissions:
+  betterfurnace.use:
+    description: Allows using BetterFurnace features
+    default: true
+  betterfurnace.admin:
+    description: Administrative commands
+    default: op
