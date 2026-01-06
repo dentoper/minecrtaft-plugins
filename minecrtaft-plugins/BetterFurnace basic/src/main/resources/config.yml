@@ -1,0 +1,47 @@
+# BetterFurnace Configuration File
+
+# Block settings - which blocks to enhance
+blocks:
+  furnace:
+    enabled: true
+  blast_furnace:
+    enabled: true
+  smoker:
+    enabled: true
+  campfire:
+    enabled: true
+  soul_campfire:
+    enabled: true
+
+# Display settings
+display:
+  enabled: true
+  update_title: false
+
+  # Animation settings
+  animation:
+    enabled: true
+    speed_ticks: 4
+
+  # What to display
+  show_progress_bar: true
+  show_item_count: true
+  show_fuel: true
+
+  # Progress bar customization
+  progress_bar:
+    length: 10
+    fill: "█"
+    empty: "░"
+    color_complete: "&a"
+    color_incomplete: "&7"
+
+  # Display formats
+  formats:
+    # Available placeholders: <item>, <progress>, <fuel>
+    furnace: "&e⚙ &f<item> &e| &f<progress> &e| &f⛽<fuel>"
+    # Available placeholders: <item>, <progress>
+    campfire: "&c🔥 &f<item> &c| &f<progress>"
+
+# Player preferences (auto-generated)
+players: {}
