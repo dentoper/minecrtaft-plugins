@@ -14,19 +14,12 @@ public class PreferenceManager {
 
     private final BetterFurnacePlugin plugin;
     private final Map<UUID, PlayerPreferences> playerPreferences;
-    private final FileConfiguration config;
     private final FileConfiguration preferencesConfig;
 
     public PreferenceManager(BetterFurnacePlugin plugin) {
         this.plugin = plugin;
         this.playerPreferences = new HashMap<>();
-        this.config = plugin.getConfig();
-        this.preferencesConfig = loadPreferences();
-    }
-
-    private FileConfiguration loadPreferences() {
-        plugin.saveResource("preferences.yml", false);
-        return plugin.getConfig();
+        this.preferencesConfig = plugin.getConfig();
     }
 
     public PlayerPreferences getPreferences(UUID uuid) {
