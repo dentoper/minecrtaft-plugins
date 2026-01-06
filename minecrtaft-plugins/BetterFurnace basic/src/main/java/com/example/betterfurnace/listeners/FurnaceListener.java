@@ -3,7 +3,6 @@ package com.example.betterfurnace.listeners;
 import com.example.betterfurnace.BetterFurnacePlugin;
 import com.example.betterfurnace.managers.CookingTracker;
 import com.example.betterfurnace.managers.DisplayManager;
-import org.bukkit.Material;
 import org.bukkit.block.BlastFurnace;
 import org.bukkit.block.Furnace;
 import org.bukkit.block.Smoker;

@@ -1,5 +1,8 @@
 package com.example.betterfurnace;
 
+import com.example.betterfurnace.listeners.CampfireListener;
+import com.example.betterfurnace.listeners.ChunkListener;
+import com.example.betterfurnace.listeners.FurnaceListener;
 import com.example.betterfurnace.managers.ConfigManager;
 import com.example.betterfurnace.managers.CookingTracker;
 import com.example.betterfurnace.managers.DisplayManager;
@@ -25,12 +28,9 @@ public final class BetterFurnacePlugin extends JavaPlugin {
         cookingTracker = new CookingTracker(this);
         displayManager = new DisplayManager(this);
 
-        getServer().getPluginManager().registerEvents(
-            new listeners.FurnaceListener(this), this);
-        getServer().getPluginManager().registerEvents(
-            new listeners.CampfireListener(this), this);
-        getServer().getPluginManager().registerEvents(
-            new listeners.ChunkListener(this), this);
+        getServer().getPluginManager().registerEvents(new FurnaceListener(this), this);
+        getServer().getPluginManager().registerEvents(new CampfireListener(this), this);
+        getServer().getPluginManager().registerEvents(new ChunkListener(this), this);
 
         getLogger().info("BetterFurnace has been enabled!");
         getLogger().info("Supported blocks: Furnace, Blast Furnace, Smoker, Campfire, Soul Campfire");
