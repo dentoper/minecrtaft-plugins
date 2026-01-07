@@ -31,7 +31,11 @@ public class TradeConfig {
      */
     private void loadDefaults() {
         FileConfiguration config = plugin.getConfig();
-        
+
+        // Настройки трейда
+        config.addDefault("trade.max_distance", 10);
+        config.addDefault("trade.error_too_far", "&cИгрок слишком далеко! Максимальное расстояние: {distance} блоков");
+
         // Названия элементов
         config.addDefault("names.title", "&5&lТрейд");
         config.addDefault("names.agree", "&a&l✓ СОГЛАСИЕ");
@@ -100,8 +104,27 @@ public class TradeConfig {
     }
 
     /**
+     * Возвращает максимальное расстояние между игроками для открытия трейда.
+     *
+     * @return максимальное расстояние в блоках
+     */
+    public int getMaxDistance() {
+        return getInt("trade.max_distance", 10);
+    }
+
+    /**
+     * Возвращает сообщение об ошибке когда расстояние слишком большое.
+     * Поддерживает плейсхолдер {distance} для замены на максимальное расстояние.
+     *
+     * @return сообщение об ошибке с цветовыми кодами
+     */
+    public String getErrorTooFar() {
+        return getString("trade.error_too_far", "&cИгрок слишком далеко! Максимальное расстояние: {distance} блоков");
+    }
+
+    /**
      * Преобразует цветовые коды (включая HEX) в формат Minecraft.
-     * 
+     *
      * @param message сообщение с кодами & или &#RRGGBB
      * @return отформатированная строка
      */
@@ -114,7 +137,7 @@ public class TradeConfig {
         while (matcher.find()) {
             matcher.appendReplacement(buffer, ChatColor.of("#" + matcher.group(1)).toString());
         }
-        
+
         return ChatColor.translateAlternateColorCodes('&', matcher.appendTail(buffer).toString());
     }
 }

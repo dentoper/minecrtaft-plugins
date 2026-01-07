@@ -105,8 +105,13 @@ public class TradeCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        if (!TradeValidator.isWithinDistance(player, target, 8.0)) {
-            player.sendMessage("§c[✗] Игрок находится на расстоянии более 8 блоков!");
+        // Проверяем расстояние между игроками используя значение из конфига
+        int maxDistance = plugin.getTradeConfig().getMaxDistance();
+        if (!TradeValidator.isWithinDistance(player, target, maxDistance)) {
+            // Получаем сообщение об ошибке из конфига и заменяем плейсхолдер {distance}
+            String errorMessage = plugin.getTradeConfig().getErrorTooFar();
+            errorMessage = errorMessage.replace("{distance}", String.valueOf(maxDistance));
+            player.sendMessage(errorMessage);
             return true;
         }
 
@@ -205,7 +210,7 @@ public class TradeCommand implements CommandExecutor, TabCompleter {
      */
     private boolean handleEditCommand(Player player, String[] args) {
         if (args.length < 2) {
-            player.sendMessage("§cИспользование: /trade edit <name|loc|view> ...");
+            player.sendMessage("§cИспользование: /trade edit <name|loc|trade|view> ...");
             return true;
         }
 
@@ -221,7 +226,7 @@ public class TradeCommand implements CommandExecutor, TabCompleter {
                 }
                 String element = args[2].toLowerCase();
                 String newName = String.join(" ", Arrays.copyOfRange(args, 3, args.length));
-                
+
                 // Убираем кавычки если они есть
                 if (newName.startsWith("\"") && newName.endsWith("\"") && newName.length() > 1) {
                     newName = newName.substring(1, newName.length() - 1);
@@ -241,7 +246,7 @@ public class TradeCommand implements CommandExecutor, TabCompleter {
 
                 config.set("names." + element, newName);
                 player.sendMessage("§a[✓] Название для '" + element + "' изменено на: " + TradeConfig.color(newName));
-                
+
                 // Применяем изменения к открытым инвентарям
                 refreshAllInventories();
             }
@@ -269,8 +274,62 @@ public class TradeCommand implements CommandExecutor, TabCompleter {
                 player.sendMessage("§a[✓] Позиция для '" + element + "' изменена на слот: " + slot);
                 player.sendMessage("§7Изменения применятся при следующем открытии трейда.");
             }
+            case "trade" -> {
+                if (args.length < 3) {
+                    player.sendMessage("§cИспользование: /trade edit trade <max_distance|error_too_far> <значение>");
+                    return true;
+                }
+                String element = args[2].toLowerCase();
+
+                if (element.equals("max_distance")) {
+                    if (args.length < 4) {
+                        player.sendMessage("§cИспользование: /trade edit trade max_distance <расстояние>");
+                        return true;
+                    }
+                    int distance;
+                    try {
+                        distance = Integer.parseInt(args[3]);
+                    } catch (NumberFormatException e) {
+                        player.sendMessage("§c[✗] Расстояние должно быть числом!");
+                        return true;
+                    }
+
+                    if (distance < 1) {
+                        player.sendMessage("§c[✗] Расстояние должно быть положительным числом!");
+                        return true;
+                    }
+
+                    config.set("trade.max_distance", distance);
+                    player.sendMessage("§a[✓] Максимальное расстояние изменено на: " + distance + " блоков");
+                    player.sendMessage("§7Изменения применятся при следующей попытке открыть трейд.");
+                } else if (element.equals("error_too_far")) {
+                    if (args.length < 4) {
+                        player.sendMessage("§cИспользование: /trade edit trade error_too_far <сообщение>");
+                        player.sendMessage("§7Используйте {distance} для подстановки максимального расстояния");
+                        return true;
+                    }
+
+                    String newMessage = String.join(" ", Arrays.copyOfRange(args, 3, args.length));
+
+                    // Убираем кавычки если они есть
+                    if (newMessage.startsWith("\"") && newMessage.endsWith("\"") && newMessage.length() > 1) {
+                        newMessage = newMessage.substring(1, newMessage.length() - 1);
+                    }
+
+                    config.set("trade.error_too_far", newMessage);
+                    player.sendMessage("§a[✓] Сообщение об ошибке изменено на: " + TradeConfig.color(newMessage));
+                    player.sendMessage("§7Изменения применятся при следующей попытке открыть трейд.");
+                } else {
+                    player.sendMessage("§c[✗] Неизвестный параметр: " + element);
+                    player.sendMessage("§7Доступные параметры: max_distance, error_too_far");
+                }
+            }
             case "view" -> {
                 player.sendMessage("§6=== Текущие настройки TradeSystem ===");
+                player.sendMessage("§eНастройки трейда:");
+                player.sendMessage("  §7max_distance: " + config.getMaxDistance());
+                player.sendMessage("  §7error_too_far: " + config.getErrorTooFar());
+                
                 player.sendMessage("§eНазвания:");
                 player.sendMessage("  §7title: " + config.getString("names.title", "&5&lТрейд"));
                 player.sendMessage("  §7agree: " + config.getString("names.agree", "&a&l✓ СОГЛАСИЕ"));
@@ -283,7 +342,7 @@ public class TradeCommand implements CommandExecutor, TabCompleter {
                 player.sendMessage("  §7you2: " + config.getString("names.you2", "&2&l► ВЫ"));
                 player.sendMessage("  §7clock: " + config.getString("names.clock", "&7&lТАЙМЕР"));
                 player.sendMessage("  §7clock_active: " + config.getString("names.clock_active", "&6&lТАЙМЕР"));
-                
+
                 player.sendMessage("§eПозиции:");
                 player.sendMessage("  §7agree1 (P1): " + config.getInt("loc.agree1", 47));
                 player.sendMessage("  §7agree2 (P2): " + config.getInt("loc.agree2", 51));
@@ -385,8 +444,9 @@ public class TradeCommand implements CommandExecutor, TabCompleter {
             if (player.hasPermission("tradesystem.admin")) {
                 completions.add("name");
                 completions.add("loc");
+                completions.add("trade");
             }
-            
+
             return completions.stream()
                     .filter(s -> s.toLowerCase().startsWith(args[1].toLowerCase()))
                     .sorted()
@@ -411,13 +471,26 @@ public class TradeCommand implements CommandExecutor, TabCompleter {
             if (player.hasPermission("tradesystem.admin")) {
                 completions.addAll(Arrays.asList("agree1", "agree2", "exit", "player1", "player2", "clock"));
             }
-            
+
             return completions.stream()
                     .filter(s -> s.toLowerCase().startsWith(args[2].toLowerCase()))
                     .sorted()
                     .collect(Collectors.toList());
         }
-        
+
+        // /trade edit trade <TAB>
+        if (args.length == 3 && args[0].equalsIgnoreCase("edit") && args[1].equalsIgnoreCase("trade")) {
+            if (player.hasPermission("tradesystem.admin")) {
+                completions.add("max_distance");
+                completions.add("error_too_far");
+            }
+
+            return completions.stream()
+                    .filter(s -> s.toLowerCase().startsWith(args[2].toLowerCase()))
+                    .sorted()
+                    .collect(Collectors.toList());
+        }
+
         // /trade edit name <element> <TAB> - показываем подсказку на формат цветовых кодов
         if (args.length == 4 && args[0].equalsIgnoreCase("edit") && args[1].equalsIgnoreCase("name")) {
             if (player.hasPermission("tradesystem.admin")) {

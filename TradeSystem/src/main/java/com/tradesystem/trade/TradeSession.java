@@ -435,8 +435,9 @@ public class TradeSession {
             return;
         }
 
-        // Проверяем дистанцию между игроками
-        if (!TradeValidator.isWithinDistance(p1, p2, 8.0)) {
+        // Проверяем дистанцию между игроками используя значение из конфига
+        int maxDistance = plugin.getTradeConfig().getMaxDistance();
+        if (!TradeValidator.isWithinDistance(p1, p2, maxDistance)) {
             fullCancel("§c[✗] Трейд отменён - игроки слишком далеко друг от друга");
             return;
         }
